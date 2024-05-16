@@ -1,0 +1,67 @@
+// Value type for geographic coordinates with a regex constraint
+valuetype GeoCoordinateType oftype text {
+    constraints: [GeoCoordinateRegex];
+}
+
+// Regex constraint for geographic coordinates
+constraint GeoCoordinateRegex oftype RegexConstraint {
+    regex: /\d{1,3}\.\d+/;
+}
+
+// Value type for stadtteil with a regex constraint
+valuetype StadtteilType oftype text {
+    constraints: [StadtteilRegex];
+}
+
+// Regex constraint for stadtteil
+constraint StadtteilRegex oftype RegexConstraint {
+    regex: /^Furth-.*/;
+}
+
+// Pipeline for processing tree planting data
+pipeline TreePlantingPipeline {
+
+    // Extract data from the provided CSV file URL
+    block DataExtractor oftype HttpExtractor { url: "https://opendata.rhein-kreis-neuss.de/api/v2/catalog/datasets/stadt-neuss-herbstpflanzung-2023/exports/csv"; }
+
+    // Interpret the text file
+    block TreePlantingTextFileInterpreter oftype TextFileInterpreter {}
+
+    // Interpret the CSV file with specific settings
+    block TreePlantingCSVInterpreter oftype CSVInterpreter { enclosing: '"'; delimiter: ","; }
+
+    // Filter rows to keep only those with valid stadtteil
+    // block FilterStadtteil oftype RowFilter {
+        // condition: stadtteil ~ /^Furth-.*/;
+    // }
+
+    // Remove the specified column from the data
+    block DropColumn oftype ColumnDeleter {
+        delete: [column E];
+    }
+
+    // Interpret the table structure with specified columns and data types
+    block TreePlantingTableInterpreter oftype TableInterpreter {
+        header: true;
+        columns: [
+            "id" oftype text,
+            "stadtteil" oftype StadtteilType,
+            "geo-coordinate-1" oftype GeoCoordinateType,
+            "geo-coordinate-2" oftype GeoCoordinateType,
+            "baumart_botanisch" oftype text,
+            "pflanzjahr" oftype integer,
+        ];
+    }
+
+    // Load the interpreted data into an SQLite database
+    block DatabaseLoader oftype SQLiteLoader { table: "trees"; file: "./trees.sqlite"; }
+
+    // Data flow within the pipeline
+    DataExtractor
+        -> TreePlantingTextFileInterpreter
+        -> TreePlantingCSVInterpreter
+        // -> FilterStadtteil
+        -> DropColumn
+        -> TreePlantingTableInterpreter
+        -> DatabaseLoader;
+}
