@@ -1,51 +1,87 @@
-# Exercise Badges
+# Analyzing Climate Risk and Insights for Predicting Economic Losses
 
-![](https://byob.yarr.is/jvalue/made-template/score_ex1) ![](https://byob.yarr.is/jvalue/made-template/score_ex2) ![](https://byob.yarr.is/jvalue/made-template/score_ex3) ![](https://byob.yarr.is/jvalue/made-template/score_ex4) ![](https://byob.yarr.is/jvalue/made-template/score_ex5)
+## Project Overview
 
-# Methods of Advanced Data Engineering Template Project
+This project aims to analyze the relationship between climate risk indices and various climate metrics to understand how climate risks influence economic losses due to climate-related events. By integrating datasets that include climate change data and the Global Climate Risk Index, we explore patterns and trends to provide a comprehensive understanding of how different regions are affected by climate risks. This analysis helps in identifying the most vulnerable regions and the key factors contributing to economic instability caused by climate change.
 
-This template project provides some structure for your open data project in the MADE module at FAU.
-This repository contains (a) a data science project that is developed by the student over the course of the semester, and (b) the exercises that are submitted over the course of the semester.
-Before you begin, make sure you have [Python](https://www.python.org/) and [Jayvee](https://github.com/jvalue/jayvee) installed. We will work with [Jupyter notebooks](https://jupyter.org/). The easiest way to do so is to set up [VSCode](https://code.visualstudio.com/) with the [Jupyter extension](https://marketplace.visualstudio.com/items?itemName=ms-toolsai.jupyter).
+## Data Sources
 
-To get started, please follow these steps:
-1. Create your own fork of this repository. Feel free to rename the repository right after creation, before you let the teaching instructors know your repository URL. **Do not rename the repository during the semester**.
-2. Setup the exercise feedback by changing the exercise badge sources in the `README.md` file following the patter `![](https://byob.yarr.is/<github-user-name>/<github-repo>/score_ex<exercise-number>)`. 
-For example, if your user is _myuser_ and your repo is _myrepo_, then update the badge for _exercise 1_ to `![](https://byob.yarr.is/myrepo/myuser/score_ex1)`. Proceed with the remaining badges accordingly.
+### Climate Change Dataset
+- **Metadata URL:** [Climate Insights Dataset](https://www.kaggle.com/datasets/goyaladi/climate-insights-dataset/data)
+- **Data URL:** [Climate Change Data](https://www.kaggle.com/datasets/goyaladi/climate-insights-dataset/data?select=climate_change_data.csv)
+- **Data Type:** CSV, historical climate metrics including temperature, CO2 emissions, and sea level rise.
 
+### Climate Risk Index Dataset
+- **Metadata URL:** [Global Climate Risk Index](https://www.kaggle.com/datasets/thedevastator/global-climate-risk-index-and-related-economic-l/data)
+- **Data URL:** [Climate Risk Index Data](https://www.kaggle.com/datasets/thedevastator/global-climate-risk-index-and-related-economic-l/data?select=climate-risk-index-1.csv)
+- **Data Type:** CSV, climate risk index and economic loss data due to extreme weather events.
 
-## Project Work
-Your data engineering project will run alongside lectures during the semester. We will ask you to regularly submit project work as milestones so you can reasonably pace your work. All project work submissions **must** be placed in the `project` folder.
+## Data Pipeline Overview
 
-### Exporting a Jupyter Notebook
-Jupyter Notebooks can be exported using `nbconvert` (`pip install nbconvert`). For example, to export the example notebook to html: `jupyter nbconvert --to html examples/final-report-example.ipynb --embed-images --output final-report.html`
+The data pipeline extracts, processes, and stores datasets from Kaggle using Python, Kaggle API, pandas, and SQLite. The steps are as follows:
+1. **Download and Extract:** Datasets are downloaded from Kaggle and extracted to a specified folder.
+2. **Identify Files:** The pipeline lists files in the folder to find the relevant datasets.
+3. **Load Data:** The datasets are loaded into pandas DataFrames.
+4. **Clean Data:**
+    - For `climate_change_df`: Rows with missing data are removed.
+    - For `climate_risk_df`: If removing rows with missing data results in an empty DataFrame, NaN values are filled with 0; otherwise, rows with missing data are dropped.
+5. **Store Data:** The cleaned data is saved in a SQLite database.
 
+## How to Run the Project
 
-## Exercises
-During the semester you will need to complete exercises using [Jayvee](https://github.com/jvalue/jayvee). You **must** place your submission in the `exercises` folder in your repository and name them according to their number from one to five: `exercise<number from 1-5>.jv`.
+### Prerequisites
+- Python 3.8 or higher
+- Kaggle API
+- pandas
+- SQLite
+- matplotlib
+- seaborn
+- statsmodels
 
-In regular intervalls, exercises will be given as homework to complete during the semester. Details and deadlines will be discussed in the lecture, also see the [course schedule](https://made.uni1.de/). At the end of the semester, you will therefore have the following files in your repository:
+### Steps
+1. Clone the repository:
+    ```bash
+    git clone https://github.com/Paripurnaaaaa/made-paripurna.git
+    cd made-paripurna
+    ```
+2. Install the required dependencies:
+    ```bash
+    pip install -r requirements.txt
+    ```
+3. Run the data pipeline script:
+    ```bash
+    python pipeline.py
+    ```
+4. Open and run the Jupyter notebook for analysis:
+    ```bash
+    jupyter notebook insight-analysis.ipynb
+    ```
 
-1. `./exercises/exercise1.jv`
-2. `./exercises/exercise2.jv`
-3. `./exercises/exercise3.jv`
-4. `./exercises/exercise4.jv`
-5. `./exercises/exercise5.jv`
+## Repository Structure
 
-### Exercise Feedback
-We provide automated exercise feedback using a GitHub action (that is defined in `.github/workflows/exercise-feedback.yml`). 
-
-To view your exercise feedback, navigate to Actions -> Exercise Feedback in your repository.
-
-The exercise feedback is executed whenever you make a change in files in the `exercise` folder and push your local changes to the repository on GitHub. To see the feedback, open the latest GitHub Action run, open the `exercise-feedback` job and `Exercise Feedback` step. You should see command line output that contains output like this:
-
-```sh
-Found exercises/exercise1.jv, executing model...
-Found output file airports.sqlite, grading...
-Grading Exercise 1
-	Overall points 17 of 17
-	---
-	By category:
-		Shape: 4 of 4
-		Types: 13 of 13
+```plaintext
+project/
+│
+├── .gitignore
+├── .gitkeep
+├── analysis-report.pdf
+├── insight-analysis.ipynb
+├── pipeline.py
+├── pipeline.sh
+├── project-plan.md
+├── report.pdf
+├── test.sh
+└── test_pipeline.py
 ```
+
+## License
+
+This project is licensed under the [MIT License](https://github.com/Paripurnaaaaa/made-paripurna/blob/main/LICENSE).
+
+## Authors
+
+- Paripurna Dutta
+
+For any questions or issues, please open an issue on GitHub.
+
+
